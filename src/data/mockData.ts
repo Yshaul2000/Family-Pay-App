@@ -10,27 +10,26 @@ export const mockCards: Card[] = [
 export const mockUsers: User[] = [
   {
     id: 'user-owner',
-    name: 'ינון',
+    name: 'בעל החשבון',
     role: 'בעל החשבון',
-    avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCa9JfCfBfV1AmxNP3oWgXoMIhlXasNhlaxD2qmTjMtz6nKK_nGwAGgF-h4IA1ggIyPVfqwZHWHNCwM-NzeLLqpzb4O8dilBg1BUa69WqHurZ2jz9VZ5q9zNCKmUMEZHkAdeJjDqfl-b5j7zQG0MhVZnfUDn4Snvb2Rrrw89fOPO9RDcRJPcirII0s-kRsmlCf529MOARasn0WIxBlpR2JIsGOGfRZgNR9IZ16Xv2Oo7i6Cy2OHLFS19L0bYC1W2ulb26SE2w',
     cardId: 'card-1',
   },
   {
-    id: 'user-david',
-    name: 'דיוויד',
+    id: 'user-1',
+    name: 'משתמש א',
     role: 'משתמש',
     cardId: 'card-1',
   },
   {
-    id: 'user-sara',
-    name: 'שרה',
-    role: 'משתמשת',
+    id: 'user-2',
+    name: 'משתמש ב',
+    role: 'משתמש',
     cardId: 'card-2',
   },
   {
-    id: 'user-michal',
-    name: 'מיכל',
-    role: 'משתמשת',
+    id: 'user-3',
+    name: 'משתמש ג',
+    role: 'משתמש',
     cardId: 'card-2',
   },
 ];
