@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#7796d1",
+                    "tertiary-fixed-dim": "#88d982",
+                    "outline-variant": "#c4c6d1",
+                    "surface-variant": "#d7e4ec",
+                    "primary-fixed": "#d7e2ff",
+                    "error": "#ba1a1a",
+                    "surface-tint": "#3e5e95",
+                    "primary-container": "#002d62",
+                    "on-secondary-fixed": "#021f29",
+                    "on-secondary-container": "#4e6874",
+                    "on-primary-fixed-variant": "#24467c",
+                    "background": "#f4faff",
+                    "tertiary-fixed": "#a3f69c",
+                    "inverse-primary": "#abc7ff",
+                    "error-container": "#ffdad6",
+                    "outline": "#747781",
+                    "on-tertiary-fixed-variant": "#005312",
+                    "on-primary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#001f03",
+                    "tertiary-container": "#003709",
+                    "secondary": "#48626e",
+                    "surface-container-highest": "#d7e4ec",
+                    "surface-dim": "#cfdce4",
+                    "surface-bright": "#f4faff",
+                    "on-error": "#ffffff",
+                    "surface-container": "#e3f0f8",
+                    "inverse-surface": "#263238",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-container": "#58a756",
+                    "on-background": "#111d23",
+                    "secondary-container": "#cbe7f5",
+                    "surface": "#f4faff",
+                    "primary-fixed-dim": "#abc7ff",
+                    "on-secondary-fixed-variant": "#304a55",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-high": "#ddeaf2",
+                    "on-surface": "#111d23",
+                    "on-surface-variant": "#43474f",
+                    "secondary-fixed-dim": "#afcbd8",
+                    "primary": "#00193c",
+                    "on-primary-fixed": "#001b3f",
+                    "secondary-fixed": "#cbe7f5",
+                    "on-tertiary-fixed": "#002204",
+                    "on-secondary": "#ffffff",
+                    "surface-container-low": "#e9f6fd",
+                    "inverse-on-surface": "#e6f3fb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-slate-50/80 backdrop-blur-md flex justify-between items-center px-6 h-16 w-full rtl">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img alt="פרופיל משתמש" class="w-full h-full object-cover" data-alt="close-up portrait of a professional man with a friendly expression in a modern office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQ9BPVNngdEow04BtpuQM7wC5ZkwQFgB4B_RHeYB6rVagMyS0H4O2eiejyFRd9f_GPWY5hDn4ZWXIPbqcTnv7bSjagTzHaigzP3Gm4kBE3H6HDEEwweW1f9ze3R5YJ5E7bRwKiucuonBQ3yOFMivRqwF5D9YgE4iACVLbt7iB_W2GHMJnKhbc1p50m5NeoRGajtapj7LNA0lJUTAJke46mnK30Oc9aHzFB2xPKnDQJbA8vEGoD-gKy2QZ_u-7HvTrg6JQbRQ"/>
+</div>
+<h1 class="font-headline font-bold text-lg tracking-tight text-blue-900">ניהול הוצאות</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-200/50 transition-colors">
+<span class="material-symbols-outlined text-blue-900">notifications</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="pt-20 pb-32 px-4 max-w-2xl mx-auto">
+<div class="mb-8 px-2">
+<h2 class="font-headline text-3xl font-extrabold text-primary mb-2">הוספת עסקה</h2>
+<p class="text-on-surface-variant font-body text-sm">הזן את פרטי ההוצאה החדשה שלך בצורה מהירה ומדויקת.</p>
+</div>
+<!-- Transaction Form Card -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-[0_12px_32px_rgba(17,29,35,0.04)]">
+<form class="space-y-8">
+<!-- Amount Input Section -->
+<div class="relative group">
+<label class="block text-xs font-bold text-on-surface-variant mb-2 pr-1 uppercase tracking-wider">סכום ההוצאה</label>
+<div class="flex items-baseline gap-2 bg-surface-container-low p-6 rounded-xl group-focus-within:bg-surface-container transition-colors">
+<span class="text-4xl font-headline font-extrabold text-primary">₪</span>
+<input autofocus="" class="bg-transparent border-none focus:ring-0 text-5xl font-headline font-extrabold text-primary w-full p-0 placeholder:text-surface-variant" placeholder="0.00" type="number"/>
+</div>
+</div>
+<!-- Grid Details -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Store Name -->
+<div class="space-y-2">
+<label class="block text-xs font-bold text-on-surface-variant pr-1">בית העסק</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline">storefront</span>
+<input class="w-full bg-surface-container-low border-none rounded-xl py-4 pr-12 pl-4 focus:ring-2 focus:ring-primary-container transition-all text-on-surface font-medium" placeholder="איפה קנית?" type="text"/>
+</div>
+</div>
+<!-- Date -->
+<div class="space-y-2">
+<label class="block text-xs font-bold text-on-surface-variant pr-1">תאריך</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline">calendar_today</span>
+<input class="w-full bg-surface-container-low border-none rounded-xl py-4 pr-12 pl-4 focus:ring-2 focus:ring-primary-container transition-all text-on-surface font-medium" type="date" value="2023-10-27"/>
+</div>
+</div>
+<!-- Category -->
+<div class="space-y-2">
+<label class="block text-xs font-bold text-on-surface-variant pr-1">קטגוריה</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline">category</span>
+<select class="w-full bg-surface-container-low border-none rounded-xl py-4 pr-12 pl-4 focus:ring-2 focus:ring-primary-container transition-all text-on-surface font-medium appearance-none">
+<option>בחר קטגוריה</option>
+<option>מזון ומשקאות</option>
+<option>קניות</option>
+<option>תחבורה</option>
+<option>פנאי</option>
+<option>בריאות</option>
+</select>
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- User Assignment (Multi-select simulation) -->
+<div class="space-y-2">
+<label class="block text-xs font-bold text-on-surface-variant pr-1">שיוך משתמשים (פיצול)</label>
+<div class="flex flex-wrap gap-2 p-2 bg-surface-container-low rounded-xl min-h-[56px]">
+<button class="flex items-center gap-2 bg-primary-container text-white px-3 py-1.5 rounded-full text-xs font-medium scale-95 active:opacity-80 transition-all" type="button">
+<img class="w-5 h-5 rounded-full object-cover" data-alt="close-up of a smiling young man in a blue shirt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdA5-jTdp0jgB-2-hthNlm_74it79z2v7R9jVoNv4D0-fPoNnAkXU1DiPTpeTSHO31WOreph9pMv7rlEp2CQetMo_ge8K-Z5X0mw-3xGvSNSCEC70CqsrVUdR5N-wg1EuJyATv8q0SpkV_eHT3M6OEShDX1AcPNdtxfNEqFyOr-cfcRUKkNcVajzKQGROg6l3CH1Re8_Slla9tTPWyBcZEkVsl5Jf1DVyK--FYjDxWzxAayBBW6o6YUg7pSnLKP2OjIVCWWQ"/>
+                                אני
+                                <span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+<button class="flex items-center justify-center w-8 h-8 rounded-full border-2 border-dashed border-outline text-outline hover:border-primary hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col sm:flex-row gap-4 pt-6">
+<button class="flex-1 bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold py-4 rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined">save</span>
+                        שמירת עסקה
+                    </button>
+<button class="flex-1 bg-secondary-container text-on-secondary-container font-headline font-bold py-4 rounded-full hover:bg-surface-container-high transition-all active:scale-95" type="button">
+                        ביטול
+                    </button>
+</div>
+</form>
+</div>
+<!-- Visual Context Card (Asymmetric) -->
+<div class="mt-12 grid grid-cols-12 gap-4">
+<div class="col-span-8 bg-tertiary-fixed rounded-2xl p-6 relative overflow-hidden group">
+<div class="relative z-10">
+<h3 class="font-headline font-bold text-on-tertiary-fixed mb-1">טיפ לחיסכון</h3>
+<p class="text-on-tertiary-fixed-variant text-sm max-w-[180px]">הוצאות המזון שלך ירדו ב-12% החודש. המשך כך!</p>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -left-4 text-9xl opacity-10 group-hover:rotate-12 transition-transform duration-500" data-weight="fill">insights</span>
+</div>
+<div class="col-span-4 bg-primary-fixed rounded-2xl p-6 flex flex-col justify-between">
+<div class="bg-white/40 w-10 h-10 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-weight="fill">account_balance_wallet</span>
+</div>
+<div class="mt-4">
+<div class="text-[10px] font-bold text-on-primary-fixed-variant uppercase">יתרה</div>
+<div class="text-xl font-headline font-extrabold text-primary">₪4,250</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 rtl bg-slate-50/90 backdrop-blur-xl z-50 rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.05)] border-t border-slate-200/20">
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-blue-700 transition-colors px-3 py-1.5" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-['Inter'] text-[11px] font-bold">ראשי</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-blue-700 transition-colors px-3 py-1.5" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-['Inter'] text-[11px] font-bold">עסקאות</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-blue-100 text-blue-900 rounded-xl px-3 py-1.5 scale-110 duration-200 ease-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+<span class="font-['Inter'] text-[11px] font-bold">הוספה</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-blue-700 transition-colors px-3 py-1.5" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-['Inter'] text-[11px] font-bold">משתמשים</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-blue-700 transition-colors px-3 py-1.5" href="#">
+<span class="material-symbols-outlined">summarize</span>
+<span class="font-['Inter'] text-[11px] font-bold">סיכום</span>
+</a>
+</nav>
+</body></html>
