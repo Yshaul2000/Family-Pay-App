@@ -4,7 +4,7 @@
 
 # Family Pay App
 
-**אפליקציה לניהול הוצאות אשראי משותפות במשפחה**
+**A shared credit card expense manager for families**
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -16,38 +16,47 @@
 
 ---
 
-## מה האפליקציה עושה?
+## Overview
 
-בסוף כל חודש — מי חייב כמה?
-
-כשמספר בני משפחה חולקים כרטיסי אשראי המקושרים לחשבון מרכזי, קשה לעקוב אחרי מי קנה מה ולמי.
-**Family Pay App** פותרת את הבעיה: כל עסקה משויכת למשתמש, והמערכת מחשבת אוטומטית כמה כל אחד חייב להחזיר לבעל החשבון.
+When multiple family members share credit cards linked to a single bank account, tracking who spent what becomes a mess.
+**Family Pay App** solves this: every transaction is assigned to a user, and the system automatically calculates how much each person owes the account owner at the end of the month.
 
 ---
 
-## מסכים
+## Features
 
-| מסך | תיאור |
-|-----|--------|
-| **Dashboard** | סקירה חודשית — סך הוצאות, כמה חייבים לך, סטטוס תשלומים |
-| **עסקאות** | רשימה מלאה עם חיפוש, פילטור לפי כרטיס, שיוך ועריכה |
-| **הוספת עסקה** | טופס חכם — משמש גם לעריכה עם מילוי אוטומטי |
-| **משתמשים** | ניהול בני המשפחה, כרטיסים, ושיוכים |
-| **סיכום חודשי** | התחשבנות מפורטת עם גרפי עוגה וניווט בין חודשים |
-| **Analytics** | פילוח הוצאות לפי קטגוריה ולפי משתמש — בר-גרפים |
+- **Dashboard** — Monthly overview: total expenses, balance, who owes what, and payment status per user
+- **Transactions** — Full list with search, filter by card, assign to user, edit and delete
+- **Add / Edit Transaction** — Smart form with auto-fill when editing an existing transaction
+- **Users & Cards** — Manage family members, credit cards, and assignments
+- **Monthly Summary** — Detailed settlement table with month navigation and pie chart reports
+- **Analytics** — Bar charts by category and by user, with month navigation
 
 ---
 
-## ארכיטקטורה
+## Tech Stack
+
+| Technology | Role |
+|------------|------|
+| **React 19** | UI library |
+| **TypeScript** | Type safety |
+| **Vite** | Build tool & dev server |
+| **Tailwind CSS v4** | Styling — Material Design 3 |
+| **React Router v7** | Client-side navigation |
+| **Supabase** | PostgreSQL cloud database |
+
+---
+
+## Project Structure
 
 ```
 src/
 ├── context/
-│   └── AppContext.tsx        — ניהול מצב מרכזי + כל הפעולות (Supabase)
+│   └── AppContext.tsx        — Global state + all Supabase actions
 ├── data/
-│   └── mockData.ts           — נתוני seed לטעינה ראשונה
+│   └── mockData.ts           — Seed data for first-time setup
 ├── lib/
-│   └── supabase.ts           — חיבור לבסיס הנתונים
+│   └── supabase.ts           — Database client
 ├── pages/
 │   ├── DashboardPage.tsx
 │   ├── TransactionsPage.tsx
@@ -58,57 +67,48 @@ src/
 ├── types/
 │   └── index.ts              — User, Card, Transaction, MonthlySummary
 └── utils/
-    └── format.ts             — formatDate (DD/MM/YYYY)
+    └── format.ts             — Date formatting helpers
 ```
 
 ---
 
-## Stack טכנולוגי
+## Database Schema
 
-| טכנולוגיה | תפקיד |
-|-----------|--------|
-| **React 19** | ספריית ממשק המשתמש |
-| **TypeScript** | אכיפת טיפוסים ומבני נתונים |
-| **Vite** | כלי בנייה ושרת פיתוח |
-| **Tailwind CSS v4** | עיצוב — Material Design 3 |
-| **React Router v7** | ניווט בין מסכים |
-| **Supabase** | בסיס נתונים PostgreSQL בענן |
+```
+users           — Family members (name, role, assigned card)
+cards           — Credit cards (last 4 digits, owner)
+transactions    — All expenses (store, amount, date, category, assigned user)
+settled_users   — Payment settlements per month
+```
+
+> **Optimistic UI** — State updates immediately on every action; Supabase is synced in the background.
 
 ---
 
-## בסיס הנתונים
-
-```
-users           — בני המשפחה (שם, תפקיד, כרטיס משויך)
-cards           — כרטיסי אשראי (4 ספרות אחרונות, בעלים)
-transactions    — עסקאות (חנות, סכום, תאריך, קטגוריה, משתמש)
-settled_users   — מי שילם החזר החודש ומתי
-```
-
-> **Optimistic UI** — כל פעולה מעדכנת את ה-state מיד, ואז נשמרת ב-Supabase ברקע.
-
----
-
-## התקנה והרצה מקומית
+## Getting Started
 
 ```bash
-# Clone
+# Clone the repository
 git clone https://github.com/Yshaul2000/Family-Pay-App.git
 cd Family-Pay-App
 
-# Install
+# Install dependencies
 npm install
 
-# Run dev server
+# Set up environment variables
+cp .env.example .env.local
+# Fill in your Supabase URL and anon key
+
+# Start the dev server
 npm run dev
 
-# Run on local network (for mobile access)
+# Access from mobile on the same network
 npm run dev -- --host
 ```
 
-### משתני סביבה
+### Environment Variables
 
-הפרויקט משתמש ב-Supabase. הוסף קובץ `.env.local`:
+Create a `.env.local` file in the project root:
 
 ```env
 VITE_SUPABASE_URL=your-supabase-url
@@ -117,13 +117,13 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 
 ---
 
-## פיצ'רים עתידיים
+## Roadmap
 
-- [ ] פיצול הוצאה בין מספר משתמשים
-- [ ] היסטוריית חודשים מופרדת ב-`settled_users`
-- [ ] התראות push לתשלום חוב
-- [ ] מסך Analytics מורחב
-- [ ] ייצוא דוח PDF
+- [ ] Split expenses between multiple users
+- [ ] Per-month settlement history
+- [ ] Push notifications for pending payments
+- [ ] PDF report export
+- [ ] Extended analytics
 
 ---
 
