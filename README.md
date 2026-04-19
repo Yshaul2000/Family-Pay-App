@@ -93,7 +93,7 @@ settled_users   — מי שילם החזר החודש ומתי
 
 ```bash
 # Clone
-git clone https://github.com/Yinon2000/Family-Pay-App.git
+git clone https://github.com/Yshaul2000/Family-Pay-App.git
 cd Family-Pay-App
 
 # Install
@@ -129,6 +129,6 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 
 <div align="center">
 
-Made with ♥ by [Yinon2000](https://github.com/Yinon2000)
+Made with ♥ by [Yshaul2000](https://github.com/Yshaul2000)
 
 </div>
