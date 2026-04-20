@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
 export default function UsersPage() {
-  const { users, cards, addUser, updateUser, deleteUser, assignCardToUser, addCard, deleteCard } = useApp();
-  const usersWithCard = users.filter(u => u.cardId).length;
+  const { users, cards, addUser, updateUser, deleteUser, assignCardsToUser, addCard, deleteCard } = useApp();
+  const usersWithCard = users.filter(u => u.cardIds?.length).length;
 
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -270,7 +270,7 @@ export default function UsersPage() {
       {/* Users List */}
       <section className="space-y-3">
         {filtered.map(user => {
-          const card = cards.find(c => c.id === user.cardId);
+          const userCards = cards.filter(c => user.cardIds?.includes(c.id));
           const isEditing = editingId === user.id;
 
           return (
@@ -286,33 +286,43 @@ export default function UsersPage() {
                         {user.name[0]}
                       </div>
                     )}
-                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${card ? 'bg-[#a3f69c]' : 'bg-[#747781]'}`} />
+                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${userCards.length > 0 ? 'bg-[#a3f69c]' : 'bg-[#747781]'}`} />
                   </div>
                   <div>
                     <h3 className="font-bold text-[#111d23]">{user.name}</h3>
-                    <p className="text-xs text-[#4e6874] font-medium">{user.role}</p>
+                    <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                      <p className="text-xs text-[#4e6874] font-medium">{user.role}</p>
+                      {cards.some(c => c.ownerId === user.id) && (
+                        <span className="text-[10px] font-bold bg-[#d7e2ff] text-[#002d62] px-2 py-0.5 rounded-full">
+                          בעל כרטיס
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-6">
-                  <div className="hidden md:block">
-                    {card ? (
-                      <button
-                        onClick={() => setCardPickerId(cardPickerId === user.id ? null : user.id)}
-                        className="flex flex-col items-end hover:opacity-75 transition-opacity"
-                      >
-                        <span className="text-[10px] block text-[#747781] mb-1 font-bold">כרטיס משויך</span>
-                        <code className="text-sm font-mono font-bold text-[#00193c]">**** {card.lastFourDigits}</code>
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => setCardPickerId(cardPickerId === user.id ? null : user.id)}
-                        className="text-xs font-bold text-[#002d62] px-3 py-1 bg-[#d7e2ff] rounded-full flex items-center gap-1"
-                      >
-                        <span className="material-symbols-outlined text-[14px]">credit_card</span>
-                        שיוך כרטיס
-                      </button>
-                    )}
+                  <div>
+                    <button
+                      onClick={() => setCardPickerId(cardPickerId === user.id ? null : user.id)}
+                      className="flex flex-col items-end hover:opacity-75 transition-opacity"
+                    >
+                      <span className="text-[10px] block text-[#747781] mb-1 font-bold">כרטיסים משויכים</span>
+                      {userCards.length > 0 ? (
+                        <div className="flex gap-1 flex-wrap justify-end">
+                          {userCards.map(c => (
+                            <code key={c.id} className="text-xs font-mono font-bold text-[#00193c] bg-[#d7e2ff] px-2 py-0.5 rounded-full">
+                              **** {c.lastFourDigits}
+                            </code>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-xs font-bold text-[#002d62] px-3 py-1 bg-[#d7e2ff] rounded-full flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[14px]">credit_card</span>
+                          שיוך כרטיס
+                        </span>
+                      )}
+                    </button>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -334,41 +344,39 @@ export default function UsersPage() {
               {/* Card picker panel */}
               {cardPickerId === user.id && (
                 <div className="border-t border-surface-container px-4 py-4 bg-surface-container-low">
-                  <p className="text-xs font-bold text-[#43474f] mb-3">בחר כרטיס לשיוך</p>
+                  <p className="text-xs font-bold text-[#43474f] mb-3">בחר כרטיסים לשיוך (ניתן לבחור כמה)</p>
                   <div className="flex flex-wrap gap-2">
-                    {cards.map(c => (
-                      <button
-                        key={c.id}
-                        onClick={() => {
-                          assignCardToUser(user.id, c.id);
-                          setCardPickerId(null);
-                        }}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all ${
-                          user.cardId === c.id
-                            ? 'bg-[#00193c] text-white'
-                            : 'bg-white text-[#00193c] border border-[#d7e4ec] hover:bg-[#d7e4ec]'
-                        }`}
-                      >
-                        <span className="material-symbols-outlined text-[16px]">credit_card</span>
-                        **** {c.lastFourDigits}
-                        {user.cardId === c.id && (
-                          <span className="material-symbols-outlined text-[14px]">check</span>
-                        )}
-                      </button>
-                    ))}
-                    {user.cardId && (
-                      <button
-                        onClick={() => {
-                          assignCardToUser(user.id, '');
-                          setCardPickerId(null);
-                        }}
-                        className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold bg-[#ffdad6]/40 text-[#ba1a1a] hover:bg-[#ffdad6] transition-all"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">link_off</span>
-                        הסר שיוך
-                      </button>
-                    )}
+                    {cards.map(c => {
+                      const selected = user.cardIds?.includes(c.id) ?? false;
+                      return (
+                        <button
+                          key={c.id}
+                          onClick={() => {
+                            const current = user.cardIds ?? [];
+                            const updated = selected
+                              ? current.filter(id => id !== c.id)
+                              : [...current, c.id];
+                            assignCardsToUser(user.id, updated);
+                          }}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all ${
+                            selected
+                              ? 'bg-[#00193c] text-white'
+                              : 'bg-white text-[#00193c] border border-[#d7e4ec] hover:bg-[#d7e4ec]'
+                          }`}
+                        >
+                          <span className="material-symbols-outlined text-[16px]">credit_card</span>
+                          **** {c.lastFourDigits}
+                          {selected && <span className="material-symbols-outlined text-[14px]">check</span>}
+                        </button>
+                      );
+                    })}
                   </div>
+                  <button
+                    onClick={() => setCardPickerId(null)}
+                    className="mt-3 text-xs font-bold text-[#4e6874] hover:text-[#00193c] transition-colors"
+                  >
+                    סגור
+                  </button>
                 </div>
               )}
 

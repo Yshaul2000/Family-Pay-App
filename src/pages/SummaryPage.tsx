@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import type { MonthlySummary, User, Transaction, TransactionCategory } from '../types';
 import { formatDate } from '../utils/format';
+import { computeOwnerSummary } from '../utils/summaryUtils';
 
 // --- helpers ---
 
@@ -178,35 +179,19 @@ function ReportModal({ summary, users, transactions, onClose }: ReportModalProps
 
 export default function SummaryPage() {
   const navigate = useNavigate();
-  const { transactions, users, monthlySummary, markSettled, unmarkSettled } = useApp();
+  const { transactions, users, cards, cardOwners, settledUsers, markSettled, unmarkSettled } = useApp();
   const [showReport, setShowReport] = useState(false);
 
   const currentMonth = new Date().toISOString().slice(0, 7);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [selectedOwnerId, setSelectedOwnerId] = useState(cardOwners[0]?.id ?? '');
   const isCurrentMonth = selectedMonth === currentMonth;
 
-  // Filter transactions to selected month
-  const monthTxs = transactions.filter(tx => tx.date.startsWith(selectedMonth));
-  const totalExpenses = monthTxs.reduce((sum, tx) => sum + tx.amount, 0);
+  const localSummary: MonthlySummary = computeOwnerSummary(
+    selectedOwnerId, selectedMonth, transactions, cards, users, settledUsers
+  );
 
-  // Compute per-user totals for the selected month
-  const nonOwnerUsers = users.filter(u => u.role !== 'בעל החשבון');
-  const userSummaries = nonOwnerUsers.map(user => {
-    const userTxs = monthTxs.filter(tx => tx.assignedUserId === user.id);
-    const totalOwed = userTxs.reduce((sum, tx) => sum + tx.amount, 0);
-    // settled status is global (not per-month) — show only when viewing current month
-    const globalSettled = monthlySummary.userSummaries.find(s => s.userId === user.id);
-    const settledDate = isCurrentMonth ? globalSettled?.settledDate : undefined;
-    return {
-      userId: user.id,
-      totalOwed,
-      totalPaid: settledDate ? totalOwed : 0,
-      transactionCount: userTxs.length,
-      settledDate,
-    };
-  });
-
-  const localSummary: MonthlySummary = { month: selectedMonth, totalExpenses, userSummaries };
+  const { totalExpenses, userSummaries } = localSummary;
 
   const totalPaid    = userSummaries.reduce((s, u) => s + u.totalPaid, 0);
   const totalRemaining = userSummaries.filter(u => !u.settledDate).reduce((s, u) => s + u.totalOwed, 0);
@@ -258,13 +243,34 @@ export default function SummaryPage() {
         </button>
       </header>
 
+      {/* Owner selector */}
+      {cardOwners.length > 1 && (
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex gap-2 flex-wrap">
+            {cardOwners.map(owner => (
+              <button
+                key={owner.id}
+                onClick={() => setSelectedOwnerId(owner.id)}
+                className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${
+                  selectedOwnerId === owner.id
+                    ? 'bg-[#002d62] text-white'
+                    : 'bg-[#ddeaf2] text-[#43474f] hover:bg-[#d7e4ec]'
+                }`}
+              >
+                {owner.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Bento Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="md:col-span-2 bg-[#00193c] rounded-3xl p-8 text-white relative overflow-hidden shadow-xl">
           <div className="relative z-10">
             <p className="text-[#7796d1] font-medium mb-1">סך הכל החזרים צפויים</p>
             <h3 className="text-5xl font-extrabold mb-6 tracking-tight" style={{ fontFamily: 'Manrope' }}>
-              ₪{totalExpenses.toLocaleString()}.00
+              ₪{totalExpenses.toLocaleString(undefined, { maximumFractionDigits: 2 })}
             </h3>
             <div className="flex gap-4">
               <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl">

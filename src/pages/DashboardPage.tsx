@@ -1,30 +1,61 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { computeOwnerSummary } from '../utils/summaryUtils';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { monthlySummary, users } = useApp();
+  const { transactions, users, cards, cardOwners, settledUsers } = useApp();
 
-  const totalExpenses = monthlySummary.totalExpenses;
-  const totalOwed = monthlySummary.userSummaries
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const [selectedOwnerId, setSelectedOwnerId] = useState(cardOwners[0]?.id ?? '');
+
+  const summary = computeOwnerSummary(
+    selectedOwnerId, currentMonth, transactions, cards, users, settledUsers
+  );
+
+  const totalOwed = summary.userSummaries
     .filter(s => !s.settledDate)
     .reduce((sum, s) => sum + s.totalOwed, 0);
 
-  // Owner balance = total expenses minus what others owe (i.e. owner's personal share)
-  const ownerBalance = totalExpenses - monthlySummary.userSummaries.reduce((sum, s) => sum + s.totalOwed, 0);
+  // Owner's own expenses = transactions on their cards assigned to themselves
+  const ownerCardIds = new Set(cards.filter(c => c.ownerId === selectedOwnerId).map(c => c.id));
+  const ownerPersonal = transactions
+    .filter(tx => tx.date.startsWith(currentMonth) && ownerCardIds.has(tx.cardId) && tx.assignedUserId === selectedOwnerId)
+    .reduce((sum, tx) => sum + tx.amount, 0);
 
-  const pendingUsers = monthlySummary.userSummaries
-    .filter(s => !s.settledDate)
+  const pendingUsers = summary.userSummaries
+    .filter(s => !s.settledDate && s.totalOwed > 0)
     .map(s => ({ ...s, user: users.find(u => u.id === s.userId) }));
 
   return (
     <main className="pt-24 px-6 max-w-5xl mx-auto pb-32">
-      {/* Intro */}
+      {/* Intro + owner selector */}
       <section className="mb-10">
         <h2 className="text-3xl font-extrabold text-[#00193c] mb-2" style={{ fontFamily: 'Manrope' }}>
           סקירה כללית
         </h2>
-        <p className="text-[#4e6874] font-medium opacity-80">ריכוז הוצאות האשראי המשותפות שלך</p>
+        <p className="text-[#4e6874] font-medium opacity-80 mb-4">ריכוז הוצאות האשראי המשותפות שלך</p>
+
+        {cardOwners.length > 1 && (
+          <div className="flex items-center gap-3">
+            <div className="flex gap-2 flex-wrap">
+              {cardOwners.map(owner => (
+                <button
+                  key={owner.id}
+                  onClick={() => setSelectedOwnerId(owner.id)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${
+                    selectedOwnerId === owner.id
+                      ? 'bg-[#002d62] text-white'
+                      : 'bg-[#ddeaf2] text-[#43474f] hover:bg-[#d7e4ec]'
+                  }`}
+                >
+                  {owner.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Summary Cards */}
@@ -42,7 +73,7 @@ export default function DashboardPage() {
           <div className="mt-4">
             <p className="text-sm font-bold text-[#4e6874] opacity-60">סה״כ הוצאות החודש</p>
             <h3 className="text-3xl font-extrabold text-[#00193c]" style={{ fontFamily: 'Manrope' }}>
-              ₪{totalExpenses.toLocaleString()}
+              ₪{summary.totalExpenses.toLocaleString()}
             </h3>
           </div>
         </div>
@@ -54,13 +85,13 @@ export default function DashboardPage() {
             <span className="material-symbols-outlined">payments</span>
           </span>
           <div className="mt-4">
-            <p className="text-sm font-bold text-white/60">היתרה שלך</p>
+            <p className="text-sm font-bold text-white/60">ההוצאה האישית שלך</p>
             <h3 className="text-3xl font-extrabold" style={{ fontFamily: 'Manrope' }}>
-              ₪{ownerBalance.toLocaleString()}
+              ₪{ownerPersonal.toLocaleString()}
             </h3>
             <div className="mt-4 flex items-center gap-2 text-xs text-white/40">
               <span className="material-symbols-outlined text-sm">info</span>
-              <span>מעודכן ל-15 דקות האחרונות</span>
+              <span>עסקאות על הכרטיסים שלך</span>
             </div>
           </div>
         </div>
@@ -97,6 +128,9 @@ export default function DashboardPage() {
           </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {pendingUsers.length === 0 && (
+            <p className="text-sm text-[#4e6874] col-span-2">אין חובות פתוחים</p>
+          )}
           {pendingUsers.map(({ userId, totalOwed: owed, user }) => (
             <div
               key={userId}
@@ -108,7 +142,7 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <h4 className="font-bold text-[#00193c]">{user?.name ?? userId}</h4>
-                  <p className="text-xs text-[#4e6874]">עודכן לאחרונה: אתמול</p>
+                  <p className="text-xs text-[#4e6874]">חייב לך</p>
                 </div>
               </div>
               <div className="text-right">

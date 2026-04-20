@@ -40,13 +40,18 @@ const ALL_CATEGORIES: TransactionCategory[] = [
 
 export default function AnalyticsPage() {
   const navigate = useNavigate();
-  const { transactions, users } = useApp();
+  const { transactions, users, cards, cardOwners } = useApp();
 
   const currentMonth = new Date().toISOString().slice(0, 7);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [selectedOwnerId, setSelectedOwnerId] = useState(cardOwners[0]?.id ?? '');
   const isCurrentMonth = selectedMonth === currentMonth;
 
-  const monthTxs = transactions.filter(tx => tx.date.startsWith(selectedMonth));
+  // Filter to selected owner's cards only
+  const ownerCardIds = new Set(cards.filter(c => c.ownerId === selectedOwnerId).map(c => c.id));
+  const monthTxs = transactions.filter(tx =>
+    tx.date.startsWith(selectedMonth) && ownerCardIds.has(tx.cardId)
+  );
   const total = monthTxs.reduce((sum, tx) => sum + tx.amount, 0);
 
   // Category breakdown
@@ -56,9 +61,9 @@ export default function AnalyticsPage() {
     return { cat, amount, count: txs.length };
   }).filter(c => c.amount > 0).sort((a, b) => b.amount - a.amount);
 
-  // Per-user breakdown (non-owners only)
-  const nonOwnerUsers = users.filter(u => u.role !== 'בעל החשבון');
-  const byUser = nonOwnerUsers.map(user => {
+  // Per-user breakdown (who used the owner's cards, excluding owner themselves)
+  const debtors = users.filter(u => u.id !== selectedOwnerId);
+  const byUser = debtors.map(user => {
     const txs = monthTxs.filter(tx => tx.assignedUserId === user.id);
     const amount = txs.reduce((sum, tx) => sum + tx.amount, 0);
     return { user, amount, count: txs.length };
@@ -81,6 +86,23 @@ export default function AnalyticsPage() {
           </button>
           <h2 className="text-3xl font-extrabold text-[#00193c]" style={{ fontFamily: 'Manrope' }}>ניתוח הוצאות</h2>
           <p className="text-[#4e6874] text-sm mt-1">פילוח לפי קטגוריה ומשתמש</p>
+          {cardOwners.length > 1 && (
+            <div className="flex items-center gap-2 mt-3 flex-wrap">
+              {cardOwners.map(owner => (
+                <button
+                  key={owner.id}
+                  onClick={() => setSelectedOwnerId(owner.id)}
+                  className={`px-3 py-1 rounded-full text-xs font-bold transition-colors ${
+                    selectedOwnerId === owner.id
+                      ? 'bg-[#002d62] text-white'
+                      : 'bg-[#ddeaf2] text-[#43474f] hover:bg-[#d7e4ec]'
+                  }`}
+                >
+                  {owner.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Month navigation */}

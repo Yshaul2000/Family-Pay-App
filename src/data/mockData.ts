@@ -12,25 +12,25 @@ export const mockUsers: User[] = [
     id: 'user-owner',
     name: 'בעל החשבון',
     role: 'בעל החשבון',
-    cardId: 'card-1',
+    cardIds: ['card-1'],
   },
   {
     id: 'user-1',
     name: 'משתמש א',
     role: 'משתמש',
-    cardId: 'card-1',
+    cardIds: ['card-1'],
   },
   {
     id: 'user-2',
     name: 'משתמש ב',
     role: 'משתמש',
-    cardId: 'card-2',
+    cardIds: ['card-2'],
   },
   {
     id: 'user-3',
     name: 'משתמש ג',
     role: 'משתמש',
-    cardId: 'card-2',
+    cardIds: ['card-2'],
   },
 ];
 

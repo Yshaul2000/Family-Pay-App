@@ -11,7 +11,7 @@ function rowToUser(r: Record<string, unknown>): User {
     name: r.name as string,
     role: r.role as string,
     avatarUrl: r.avatar_url as string | undefined,
-    cardId: r.card_id as string | undefined,
+    cardIds: (r.card_ids as string[] | null) ?? [],
   };
 }
 
@@ -44,6 +44,8 @@ interface AppContextValue {
   users: User[];
   cards: Card[];
   transactions: Transaction[];
+  settledUsers: Record<string, string>;
+  cardOwners: User[];  // users who own at least one card
   monthlySummary: MonthlySummary;
   addTransaction: (data: Omit<Transaction, 'id'>) => Promise<void>;
   updateTransaction: (id: string, updates: Partial<Omit<Transaction, 'id'>>) => Promise<void>;
@@ -54,7 +56,7 @@ interface AppContextValue {
   addUser: (data: Omit<User, 'id'>) => Promise<void>;
   updateUser: (id: string, updates: Partial<Omit<User, 'id'>>) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
-  assignCardToUser: (userId: string, cardId: string) => Promise<void>;
+  assignCardsToUser: (userId: string, cardIds: string[]) => Promise<void>;
   addCard: (lastFourDigits: string, ownerId: string) => Promise<void>;
   deleteCard: (id: string) => Promise<void>;
 }
@@ -88,7 +90,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         await supabase.from('users').insert(mockUsers.map(u => ({
           id: u.id, name: u.name, role: u.role,
           avatar_url: u.avatarUrl ?? null,
-          card_id: u.cardId ?? null,
+          card_ids: u.cardIds ?? [],
         })));
         const fresh = await supabase.from('users').select('*');
         setUsers((fresh.data ?? []).map(rowToUser));
@@ -186,7 +188,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setUsers(prev => [...prev, newUser]);
     await supabase.from('users').insert({
       id: newUser.id, name: newUser.name, role: newUser.role,
-      avatar_url: newUser.avatarUrl ?? null, card_id: newUser.cardId ?? null,
+      avatar_url: newUser.avatarUrl ?? null, card_ids: newUser.cardIds ?? [],
     });
   }, []);
 
@@ -196,7 +198,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       ...(updates.name      !== undefined && { name: updates.name }),
       ...(updates.role      !== undefined && { role: updates.role }),
       ...(updates.avatarUrl !== undefined && { avatar_url: updates.avatarUrl }),
-      ...(updates.cardId    !== undefined && { card_id: updates.cardId ?? null }),
+      ...(updates.cardIds   !== undefined && { card_ids: updates.cardIds ?? [] }),
     }).eq('id', id);
   }, []);
 
@@ -205,9 +207,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await supabase.from('users').delete().eq('id', id);
   }, []);
 
-  const assignCardToUser = useCallback(async (userId: string, cardId: string) => {
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, cardId } : u));
-    await supabase.from('users').update({ card_id: cardId || null }).eq('id', userId);
+  const assignCardsToUser = useCallback(async (userId: string, cardIds: string[]) => {
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, cardIds } : u));
+    await supabase.from('users').update({ card_ids: cardIds }).eq('id', userId);
   }, []);
 
   const addCard = useCallback(async (lastFourDigits: string, ownerId: string) => {
@@ -225,12 +227,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const deleteCard = useCallback(async (id: string) => {
     setCards(prev => prev.filter(c => c.id !== id));
     // Unassign any users who had this card
-    setUsers(prev => prev.map(u => u.cardId === id ? { ...u, cardId: undefined } : u));
+    setUsers(prev => prev.map(u => ({ ...u, cardIds: (u.cardIds ?? []).filter(cid => cid !== id) })));
     await supabase.from('cards').delete().eq('id', id);
-    await supabase.from('users').update({ card_id: null }).eq('card_id', id);
+    // Remove this card from all users' card_ids arrays in Supabase
+    const affectedUsers = users.filter(u => u.cardIds?.includes(id));
+    await Promise.all(affectedUsers.map(u =>
+      supabase.from('users').update({ card_ids: (u.cardIds ?? []).filter(cid => cid !== id) }).eq('id', u.id)
+    ));
   }, []);
 
-  // --- Derived: monthly summary ---
+  // --- Derived: card owners ---
+
+  const cardOwners = useMemo(
+    () => users
+      .filter(u => cards.some(c => c.ownerId === u.id))
+      .sort((a, b) => (a.role === 'בעל החשבון' ? -1 : b.role === 'בעל החשבון' ? 1 : 0)),
+    [users, cards]
+  );
+
+  // --- Derived: monthly summary (kept for backwards compat) ---
 
   const monthlySummary = useMemo<MonthlySummary>(() => {
     const totalExpenses = transactions.reduce((sum, tx) => sum + tx.amount, 0);
@@ -251,10 +266,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContext.Provider value={{
-      loading, users, cards, transactions, monthlySummary,
+      loading, users, cards, transactions, settledUsers, cardOwners, monthlySummary,
       addTransaction, updateTransaction, deleteTransaction, assignTransaction,
       markSettled, unmarkSettled,
-      addUser, updateUser, deleteUser, assignCardToUser,
+      addUser, updateUser, deleteUser, assignCardsToUser,
       addCard, deleteCard,
     }}>
       {children}

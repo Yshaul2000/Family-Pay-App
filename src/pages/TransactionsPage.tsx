@@ -64,7 +64,14 @@ export default function TransactionsPage() {
                 {filterLabel(f)}
               </button>
             ))}
-            <div className="mr-auto">
+            <div className="mr-auto flex items-center gap-2">
+              <button
+                onClick={() => navigate('/import')}
+                className="bg-[#ddeaf2] text-[#002d62] rounded-full px-5 py-2 flex items-center gap-1.5 text-sm font-bold whitespace-nowrap hover:bg-[#d7e4ec] active:scale-95 transition-all"
+              >
+                <span className="material-symbols-outlined text-[18px]">upload_file</span>
+                ייבוא מ-MAX
+              </button>
               <button
                 onClick={() => navigate('/add')}
                 className="bg-[#00193c] text-white rounded-full px-5 py-2 flex items-center gap-1.5 text-sm font-bold whitespace-nowrap hover:opacity-90 active:scale-95 transition-all"

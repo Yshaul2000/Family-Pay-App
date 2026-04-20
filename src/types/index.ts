@@ -3,8 +3,8 @@ export interface User {
   id: string;
   name: string;
   role: string;
-  avatarUrl?: string; // optional — initials shown as fallback
-  cardId?: string;    // linked card (optional — user may not have one yet)
+  avatarUrl?: string;   // optional — initials shown as fallback
+  cardIds?: string[];   // cards this user uses (optional — may have none yet)
 }
 
 // --- Credit Card ---

@@ -8,6 +8,7 @@ import UsersPage from './pages/UsersPage';
 import SummaryPage from './pages/SummaryPage';
 import AddTransactionPage from './pages/AddTransactionPage';
 import AnalyticsPage from './pages/AnalyticsPage';
+import ImportPage from './pages/ImportPage';
 
 function AppContent() {
   const { loading } = useApp();
@@ -31,6 +32,7 @@ function AppContent() {
         <Route path="/summary"      element={<SummaryPage />} />
         <Route path="/add"          element={<AddTransactionPage />} />
         <Route path="/analytics"    element={<AnalyticsPage />} />
+        <Route path="/import"       element={<ImportPage />} />
       </Routes>
       <BottomNavBar />
     </div>
