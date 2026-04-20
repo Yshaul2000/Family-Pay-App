@@ -18,19 +18,20 @@
 
 ## Overview
 
-When multiple family members share credit cards linked to a single bank account, tracking who spent what becomes a mess.
-**Family Pay App** solves this: every transaction is assigned to a user, and the system automatically calculates how much each person owes the account owner at the end of the month.
+When multiple family members share credit cards, tracking who spent what becomes a mess.
+**Family Pay App** solves this: each card has an owner, every transaction is assigned to a user, and the system automatically calculates how much each person owes each card owner at the end of the month.
 
 ---
 
 ## Features
 
-- **Dashboard** — Monthly overview: total expenses, balance, who owes what, and payment status per user
+- **Dashboard** — Monthly overview: total expenses, personal balance, who owes what, per-owner perspective selector
 - **Transactions** — Full list with search, filter by card, assign to user, edit and delete
 - **Add / Edit Transaction** — Smart form with auto-fill when editing an existing transaction
-- **Users & Cards** — Manage family members, credit cards, and assignments
-- **Monthly Summary** — Detailed settlement table with month navigation and pie chart reports
-- **Analytics** — Bar charts by category and by user, with month navigation
+- **Users & Cards** — Manage family members, assign multiple cards per user, manage card ownership
+- **Monthly Summary** — Detailed settlement table with month navigation, per-owner selector, and pie chart reports
+- **Analytics** — Bar charts by category and by user, with month navigation and per-owner selector
+- **MAX Import** — Import transactions from MAX XLSX files with automatic card detection and user auto-assignment
 
 ---
 
@@ -63,11 +64,14 @@ src/
 │   ├── AddTransactionPage.tsx
 │   ├── UsersPage.tsx
 │   ├── SummaryPage.tsx
-│   └── AnalyticsPage.tsx
+│   ├── AnalyticsPage.tsx
+│   └── ImportPage.tsx        — MAX XLSX import
 ├── types/
 │   └── index.ts              — User, Card, Transaction, MonthlySummary
 └── utils/
-    └── format.ts             — Date formatting helpers
+    ├── format.ts             — Date formatting helpers
+    ├── summaryUtils.ts       — Per-owner debt calculation
+    └── parseMaxXlsx.ts       — MAX XLSX file parser
 ```
 
 ---
@@ -75,10 +79,10 @@ src/
 ## Database Schema
 
 ```
-users           — Family members (name, role, assigned card)
-cards           — Credit cards (last 4 digits, owner)
+users           — Family members (name, role, card_ids[] — multiple cards per user)
+cards           — Credit cards (last 4 digits, owner_id)
 transactions    — All expenses (store, amount, date, category, assigned user)
-settled_users   — Payment settlements per month
+settled_users   — Payment settlements
 ```
 
 > **Optimistic UI** — State updates immediately on every action; Supabase is synced in the background.
