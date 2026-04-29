@@ -12,8 +12,9 @@ dist
 dist-ssr
 *.local
 
-# Personal notes (not for GitHub)
+# Personal / Claude Code files (not for GitHub)
 MY_NOTES.md
+CLAUDE.md
 
 # Editor directories and files
 .vscode/*
